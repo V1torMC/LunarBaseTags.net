@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b0c0f">
+<title>Scanner · LunarX</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap bar">
+    <a class="brand" href="index.html">
+      <video autoplay muted loop playsinline><source src="lunar_x_360_spin.webm" type="video/webm"></video>
+      <span>LUNARX</span>
+    </a>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="modules.html">Modules</a>
+      <a href="download.html">Download</a>
+      <a href="cracks.html">Cracks</a>
+      <a class="active" href="scanner.html">Scanner</a>
+      <a href="discord.html">Discord</a>
+    </nav>
+    <a class="discord" href="https://discord.gg/2FqZVmzECY" target="_blank" rel="noopener">Discord ↗</a>
+  </div>
+</header>
+
+<main class="wrap main">
+  <div class="crumb">Home / Scanner</div>
+  <div class="head">
+    <div>
+      <div class="eyebrow">Deep static check</div>
+      <h1>JAR / EXE Scanner</h1>
+    </div>
+    <p>Local · nothing uploaded</p>
+  </div>
+
+  <div class="scanner">
+    <div class="upload">
+      <h3>Pick a file</h3>
+      <p>File stays in your browser. Nothing is uploaded or executed.</p>
+      <input type="file" id="fileInput" accept=".jar,.exe,.zip">
+      <button class="btn primary" id="scanBtn">Deep Scan</button>
+    </div>
+
+    <div class="panel">
+      <div class="head" style="margin-bottom:0">
+        <h3 id="resultTitle">Scan report</h3>
+        <span id="status" class="small">Waiting for file</span>
+      </div>
+      <div class="progress"><div id="progress"></div></div>
+
+      <div id="verdictBox"></div>
+
+      <div class="line"><span>Type</span><span id="typeOut">—</span></div>
+      <div class="line"><span>Size</span><span id="sizeOut">—</span></div>
+      <div class="line"><span>SHA-256</span><span id="hashOut">—</span></div>
+      <div class="line"><span>Flags</span><span id="countOut">—</span></div>
+
+      <ul id="findings" class="findings">
+        <li>Select a JAR or EXE to begin a deep static scan.</li>
+      </ul>
+    </div>
+  </div>
+</main>
+
+<footer class="wrap footer">
+  <span>LunarX · community page</span>
+  <span>Check files before running them.</span>
+</footer>
+<script src="scanner.js"></script>
+</body>
+</html>
