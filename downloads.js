@@ -1,53 +1,65 @@
-// LunarX download tracker (static site friendly)
+// LunarX download tracker — fixed (working API)
 (function () {
-  const NS = 'lunarxsite';
-  const API = 'https://api.counterapi.dev/v1';
+  const PREFIX = 'https://lunarx.downloads/';
 
   function el(id) { return document.getElementById(id); }
 
-  async function getCount(key) {
-    try {
-      const r = await fetch(API + '/' + NS + '/' + key + '/', { cache: 'no-store' });
-      if (!r.ok) return 0;
-      const j = await r.json();
-      return j.count || j.value || 0;
-    } catch (e) {
-      return null;
-    }
+  function format(n) {
+    if (n === null || n === undefined || isNaN(n)) return '0 downloads';
+    n = Number(n);
+    return n.toLocaleString() + ' download' + (n === 1 ? '' : 's');
+  }
+
+  function parseCount(svgText) {
+    // aria-label="12 / 12" or title>12 / 12
+    var m = svgText.match(/aria-label="(\d+)\s*\/\s*(\d+)/i)
+         || svgText.match(/title>(\d+)\s*\/\s*(\d+)/i)
+         || svgText.match(/aria-label="(\d+)/i);
+    if (!m) return null;
+    // use the larger number (total)
+    if (m[2]) return Math.max(parseInt(m[1], 10), parseInt(m[2], 10));
+    return parseInt(m[1], 10);
   }
 
   async function bump(key) {
     try {
-      const r = await fetch(API + '/' + NS + '/' + key + '/up', { cache: 'no-store' });
-      if (!r.ok) return null;
-      const j = await r.json();
-      return j.count || j.value || null;
+      var r = await fetch('https://hitscounter.dev/api/hit?url=' + encodeURIComponent(PREFIX + key), {
+        cache: 'no-store',
+        mode: 'cors'
+      });
+      var text = await r.text();
+      return parseCount(text);
     } catch (e) {
+      console.warn('counter error', e);
       return null;
     }
   }
 
-  function format(n) {
-    if (n === null || n === undefined) return '—';
-    return n.toLocaleString() + ' download' + (n === 1 ? '' : 's');
-  }
-
-  // data-dl-key on each download button, matching span id="count-KEY"
   async function init() {
-    const buttons = document.querySelectorAll('a[data-dl-key]');
-    for (const btn of buttons) {
-      const key = btn.getAttribute('data-dl-key');
-      const label = el('count-' + key);
+    var buttons = document.querySelectorAll('a[data-dl-key]');
+    buttons.forEach(function (btn) {
+      var key = btn.getAttribute('data-dl-key');
+      var label = el('count-' + key);
+
+      // show cached count immediately (if any)
       if (label) {
-        const n = await getCount(key);
-        label.textContent = format(n);
+        var cached = localStorage.getItem('lx-dl-' + key);
+        label.textContent = cached ? format(Number(cached)) : '0 downloads';
       }
+
       btn.addEventListener('click', async function () {
-        const n = await bump(key);
-        const label = el('count-' + key);
-        if (label && n !== null) label.textContent = format(n);
+        var n = await bump(key);
+        if (n === null) {
+          // fallback: local +1 so UI still moves
+          var cur = Number(localStorage.getItem('lx-dl-' + key) || 0) + 1;
+          localStorage.setItem('lx-dl-' + key, String(cur));
+          if (label) label.textContent = format(cur);
+          return;
+        }
+        localStorage.setItem('lx-dl-' + key, String(n));
+        if (label) label.textContent = format(n);
       });
-    }
+    });
   }
 
   if (document.readyState === 'loading') {
