@@ -50,7 +50,7 @@
     <div class="actions">
       <a class="btn primary" href="Krypton-CRACKED-BY-VITOR.jar" download data-dl-key="krypton">Download ↓</a>
     </div>
-    <div class="dl-count" id="count-krypton">Loading…</div>
+    <div class="dl-count" id="count-krypton">0 clicks</div>
   </div>
 
   <div class="card" style="margin-bottom:12px">
@@ -67,7 +67,7 @@
     <div class="actions">
       <a class="btn primary" href="Zerio-CRACKED-Vitor.jar" download data-dl-key="zerio">Download ↓</a>
     </div>
-    <div class="dl-count" id="count-zerio">Loading…</div>
+    <div class="dl-count" id="count-zerio">0 clicks</div>
   </div>
 
   <div class="card">
@@ -85,7 +85,7 @@
     <div class="actions">
       <a class="btn primary" href="Pulse-Scanner-CRACKED-VITOR.jar" download data-dl-key="pulse">Download ↓</a>
     </div>
-    <div class="dl-count" id="count-pulse">Loading…</div>
+    <div class="dl-count" id="count-pulse">0 clicks</div>
   </div>
 </main>
 
@@ -93,6 +93,22 @@
   <span>LunarX · community page</span>
   <span>Check files before running them.</span>
 </footer>
-<script src="downloads.js"></script>
+<script>
+(function(){
+  function format(n){n=Number(n)||0;return n.toLocaleString()+' click'+(n===1?'':'s');}
+  function get(key){return Number(localStorage.getItem('lxclick-'+key)||0);}
+  function set(key,n){localStorage.setItem('lxclick-'+key,String(n));}
+  document.querySelectorAll('a[data-dl-key]').forEach(function(btn){
+    var key=btn.getAttribute('data-dl-key');
+    var label=document.getElementById('count-'+key);
+    if(label) label.textContent=format(get(key));
+    btn.addEventListener('click',function(){
+      var n=get(key)+1;
+      set(key,n);
+      if(label) label.textContent=format(n);
+    });
+  });
+})();
+</script>
 </body>
 </html>
