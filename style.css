@@ -107,3 +107,6 @@ p{margin:0;color:#a4a7af}
   .nav a{font-size:11px;padding:7px 8px}
   .discord{display:none}
 }
+
+.dl-count{margin-top:8px;font-size:11px;color:#8b919c}
+.dl-count strong{color:#c6d6f3;font-weight:bold}
