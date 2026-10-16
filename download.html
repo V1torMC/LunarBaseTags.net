@@ -53,7 +53,7 @@
     <div class="actions">
       <a class="btn primary" href="LunarX-BASE-TAGS-1.21.11.jar" download data-dl-key="basetags">Download JAR ↓</a>
     </div>
-    <div class="dl-count" id="count-basetags">0 clicks</div>
+    <div class="dl-count" id="count-basetags">…</div>
   </div>
 
   <div class="panel">
@@ -73,7 +73,7 @@
     <div class="actions">
       <a class="btn primary" href="AquaSub5Client-1.21.11-1.0.18.jar" download data-dl-key="aqua">Download JAR ↓</a>
     </div>
-    <div class="dl-count" id="count-aqua">0 clicks</div>
+    <div class="dl-count" id="count-aqua">…</div>
   </div>
 </main>
 
@@ -81,22 +81,68 @@
   <span>LunarX · community page</span>
   <span>Check files before running them.</span>
 </footer>
+
 <script>
 (function(){
-  function format(n){n=Number(n)||0;return n.toLocaleString()+' click'+(n===1?'':'s');}
-  function get(key){return Number(localStorage.getItem('lxclick-'+key)||0);}
-  function set(key,n){localStorage.setItem('lxclick-'+key,String(n));}
+  // Fixed starting numbers (do not change)
+  var BASE = {
+    basetags: 274,
+    aqua: 168,
+    krypton: 319,
+    zerio: 142,
+    pulse: 287
+  };
+  var API = 'https://abacus.jasoncameron.dev';
+  var NS = 'lunarx';
+
+  function format(n){
+    n = Number(n)||0;
+    return n.toLocaleString() + ' downloads';
+  }
+  function el(id){ return document.getElementById(id); }
+
+  async function getExtra(key){
+    try {
+      var r = await fetch(API + '/get/' + NS + '/' + key, { cache: 'no-store', mode: 'cors' });
+      var j = await r.json();
+      if (j && typeof j.value === 'number') return j.value;
+      return 0;
+    } catch(e){ return 0; }
+  }
+
+  async function bumpExtra(key){
+    try {
+      var r = await fetch(API + '/hit/' + NS + '/' + key, { cache: 'no-store', mode: 'cors' });
+      var j = await r.json();
+      if (j && typeof j.value === 'number') return j.value;
+      return null;
+    } catch(e){ return null; }
+  }
+
+  async function show(key){
+    var label = el('count-' + key);
+    if (!label) return;
+    var extra = await getExtra(key);
+    label.textContent = format((BASE[key]||0) + extra);
+  }
+
   document.querySelectorAll('a[data-dl-key]').forEach(function(btn){
-    var key=btn.getAttribute('data-dl-key');
-    var label=document.getElementById('count-'+key);
-    if(label) label.textContent=format(get(key));
-    btn.addEventListener('click',function(){
-      var n=get(key)+1;
-      set(key,n);
-      if(label) label.textContent=format(n);
+    var key = btn.getAttribute('data-dl-key');
+    show(key);
+    btn.addEventListener('click', async function(){
+      var extra = await bumpExtra(key);
+      var label = el('count-' + key);
+      if (!label) return;
+      if (extra === null) {
+        // still show base if API fails
+        label.textContent = format(BASE[key]||0);
+        return;
+      }
+      label.textContent = format((BASE[key]||0) + extra);
     });
   });
 })();
 </script>
+
 </body>
 </html>
